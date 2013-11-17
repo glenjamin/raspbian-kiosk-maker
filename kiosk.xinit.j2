@@ -1,0 +1,9 @@
+#!/bin/sh
+matchbox-window-manager &
+xset -dpms
+xset s off
+unclutter &
+
+while true; do
+  midori -e Fullscreen -a {{ page }}
+done

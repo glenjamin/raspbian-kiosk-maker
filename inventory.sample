@@ -1,0 +1,10 @@
+# Sample - you'll probably want to change this
+
+[pi]
+raspberry.local http://dashingdemo.herokuapp.com/sample
+
+[pi:vars]
+ansible_ssh_user=pi
+
+[kiosks:children]
+pi

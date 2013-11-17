@@ -1,0 +1,46 @@
+---
+- hosts: kiosks
+  tasks:
+    - name: Install minimal window manager
+      apt: pkg=matchbox state=present
+      sudo: yes
+
+    - name: Install simple web browser
+      apt: pkg=midori state=present
+      sudo: yes
+
+    - name: Install power management options
+      apt: pkg=x11-xserver-utils state=present
+      sudo: yes
+
+    - name: Install mouse cursor hiding util
+      apt: pkg=unclutter state=present
+      sudo: yes
+
+    - name: Create kiosk xinit file
+      template: src=kiosk.xinit.j2 dest=~/kiosk.xinit
+      notify:
+        - restart X
+
+    - name: Enable auto-login via inittab tty 1
+      lineinfile: >
+          regexp="^1:2345:respawn:"
+          line="1:2345:respawn:/sbin/getty --autologin pi --noclear 38400 tty1"
+          dest=/etc/inittab
+      sudo: yes
+      notify:
+        - restart machine
+
+    - name: Run X on login via bash profile
+      template: src=bash_profile.j2 dest=~/.bash_profile
+      notify:
+        - restart machine
+
+  handlers:
+    - name: restart X
+      shell: pkill X
+
+    - name: restart machine
+      shell: /sbin/shutdown -r now
+      sudo: yes
+

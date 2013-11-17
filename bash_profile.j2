@@ -1,0 +1,4 @@
+# If starting on tty1 and no X display, start X
+if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+  exec xinit ~/kiosk.xinit
+fi
