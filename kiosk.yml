@@ -1,6 +1,10 @@
 ---
 - hosts: kiosks
   tasks:
+    - name: Ensure ansible can fiddle with apt
+      raw: apt-get install python-apt -y
+      sudo: yes
+
     - name: Install minimal window manager
       apt: pkg=matchbox state=present
       sudo: yes
@@ -25,7 +29,7 @@
     - name: Enable auto-login via inittab tty 1
       lineinfile: >
           regexp="^1:2345:respawn:"
-          line="1:2345:respawn:/sbin/getty --autologin pi --noclear 38400 tty1"
+          line="1:2345:respawn:/sbin/getty --autologin {{ansible_ssh_user}} --noclear 38400 tty1"
           dest=/etc/inittab
       sudo: yes
       notify:
@@ -38,7 +42,7 @@
 
   handlers:
     - name: restart X
-      shell: pkill X
+      shell: pkill X || true
 
     - name: restart machine
       shell: /sbin/shutdown -r now
